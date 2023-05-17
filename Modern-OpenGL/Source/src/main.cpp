@@ -3,9 +3,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-
-
-
+#include <ImGui/imgui.h>
+#include "ImGui/imgui_impl_glfw.h"
+#include "ImGui/imgui_impl_opengl3.h"
 
 bool SetupGlfw()
 {
@@ -48,6 +48,33 @@ bool SetupWindow(GLFWwindow* window)
     return true;
 }
 
+void SetupImGui(GLFWwindow* window)
+{
+    // Setup ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable viewports
+
+    io.Fonts->AddFontDefault();
+
+    // GL 3.3 + GLSL 330
+    const char* const glslVersion = "#version 330";
+
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glslVersion);
+}
+
+void StartImGuiFrame()
+{
+    // Start ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+}
 
 
 int main(int argc, char** argv)
@@ -69,13 +96,19 @@ int main(int argc, char** argv)
     if (!SetupWindow(window))
         return -1;
 
+    SetupImGui(window);
+
+
 
     // --------------------------- Main loop -------------------------
 
     while (!glfwWindowShouldClose(window))
     {
         glfwSwapBuffers(window);
+        StartImGuiFrame();
         glfwPollEvents();
+
+        
     }
 
 	return 0;

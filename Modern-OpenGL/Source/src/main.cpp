@@ -7,6 +7,8 @@
 #include "ImGui/imgui_impl_glfw.h"
 #include "ImGui/imgui_impl_opengl3.h"
 
+#include <log.h>
+
 bool SetupGlfw()
 {
     glfwSetErrorCallback([](int error, const char* description)
@@ -77,6 +79,12 @@ void StartImGuiFrame()
 }
 
 
+void processInput(GLFWwindow* window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
+
 int main(int argc, char** argv)
 {
     // ----------------------- Setup Glfw window ---------------------
@@ -98,18 +106,31 @@ int main(int argc, char** argv)
 
     SetupImGui(window);
 
+    Log file;
 
+    DEBUG_LOG("test \n");
+
+    file.OpenFile("./Assets/log/test");
+    file.Print("Mot de passe : %c ;  %c", '1', '2');
 
     // --------------------------- Main loop -------------------------
 
     while (!glfwWindowShouldClose(window))
     {
+        //Escape input
+        processInput(window);
+
+        glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         glfwSwapBuffers(window);
         StartImGuiFrame();
         glfwPollEvents();
-
         
+
     }
 
+    
+    glfwTerminate();
 	return 0;
 }

@@ -151,7 +151,11 @@
     <ClCompile Include="Source\src\Core\Maths\vec2.cpp" />
     <ClCompile Include="Source\src\Core\Maths\vec3.cpp" />
     <ClCompile Include="Source\src\Core\Maths\vec4.cpp" />
+    <ClCompile Include="Source\src\LowRenderer\camera.cpp" />
+    <ClCompile Include="Source\src\LowRenderer\light.cpp" />
+    <ClCompile Include="Source\src\LowRenderer\mesh.cpp" />
     <ClCompile Include="Source\src\main.cpp" />
+    <ClCompile Include="Source\src\Physics\transform.cpp" />
     <ClCompile Include="Source\src\Ressources\model.cpp" />
     <ClCompile Include="Source\src\Ressources\resourcesManager.cpp" />
     <ClCompile Include="Source\src\Ressources\scene.cpp" />

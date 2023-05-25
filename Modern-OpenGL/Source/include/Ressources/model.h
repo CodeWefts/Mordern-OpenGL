@@ -18,7 +18,7 @@ class Model : IResource
 
 public:
 
-	void Reader();	
+	//void Reader();	
 
 
 	Model();

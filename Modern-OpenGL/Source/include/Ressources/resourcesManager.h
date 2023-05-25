@@ -4,7 +4,6 @@
 #include <string>
 #include <unordered_map>
 
-#include <filesystem>
 
 using namespace std;
 
@@ -23,6 +22,7 @@ public:
 
 class ResourcesManager
 {
+	//dico
 	unordered_map<string, IResource*> resources;
 
 
@@ -31,9 +31,29 @@ public:
 	ResourcesManager();
 
 	template <typename T>
-	T* Create(filesystem::path const& filename);
-	template <typename T>
-	T* Get(filesystem::path const& filename);
+	T* Create(string const& filename)
+	{
+		T* resource = new T;
 
-	void Delete(filesystem::path const& filename);
+		Delete(filename);
+
+		resources.emplace(filename, resource);
+
+		return resource;
+	}
+	template <typename T>
+	T* Get(string const& filename)
+	{
+		for (auto it = resources.begin(); it != resources.end(); ++it)
+		{
+			if (it->first == filename)
+			{
+				return it->second;
+			}
+		}
+
+		return nullptr;
+	}
+
+	void Delete(string const& filename);
 };

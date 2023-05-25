@@ -2,33 +2,27 @@
 
 // ------------------------- Function -----------------------------------
 
-template <typename T> 
-T* ResourcesManager::Create(filesystem::path const& filename)
+void ResourcesManager::Delete(string const& filename)
 {
+	//Function "find" exist, don't need to have a loop
 
+	for (auto it = resources.begin(); it != resources.end(); ++it)
+	{
+		if (it->first == filename)
+		{
+			IResource* mem = it->second;
 
-	return nullptr;
-}
+			// Delete it from resources
+			resources.erase(it);
 
-template <typename T>
-T* ResourcesManager::Get(filesystem::path const& filename)
-{
-
-
-
-	return nullptr;
-}
-
-
-void ResourcesManager::Delete(filesystem::path const& filename)
-{
-
+			// Delete memory location
+			delete mem;
+		}
+	}
 }
 
 
-// ------------------
-
-
+// -------------------------- Builder --------------------------------
 
 IResource::IResource()
 {

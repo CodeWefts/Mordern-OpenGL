@@ -13,11 +13,14 @@ struct Vertex
 
 class Model : IResource
 {
-	vector<Vertex> vertexBuffer;
+	vector<Vertex> vertexBufferObj;
 	vector<uint32_t> indexBuffer;
 
 public:
 
 	void Reader();	
+
+
+	Model();
 
 };

@@ -1,9 +1,10 @@
 #pragma once
 
 #include <iostream>
-#include <filesystem>
 #include <string>
 #include <unordered_map>
+
+#include <filesystem>
 
 using namespace std;
 
@@ -12,6 +13,10 @@ class IResource
 
 
 public:
+
+	virtual void LoadResource();
+	virtual void UnloadResource();
+
 
 	IResource();
 };
@@ -26,9 +31,9 @@ public:
 	ResourcesManager();
 
 	template <typename T>
-	T* Create(string const& filename);
+	T* Create(filesystem::path const& filename);
 	template <typename T>
-	T* Get(string const& filename);
+	T* Get(filesystem::path const& filename);
 
-	void Delete(string const& filename);
+	void Delete(filesystem::path const& filename);
 };

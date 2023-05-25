@@ -6,11 +6,7 @@
 using namespace std;
 
 
-Matrix4x4::Matrix4x4()
-{
-    for (int i = 0; i < 4; i++)
-        this->value.push_back(vector<float>(4, 0.f));
-}
+// ---------------- Operator -----------------------------
 
 ostream& operator<<(ostream& stream, const Matrix4x4& matrix)
 {
@@ -60,6 +56,7 @@ Vector4 Matrix4x4::operator*(const Vector4& vect)
 
 
 
+// ----------------- Function -----------------------------
 
 Matrix4x4 Matrix4x4::IdentityMatrix()
 {
@@ -130,4 +127,12 @@ Matrix4x4 Matrix4x4::TRS(Vector4& angle, Vector4& vectorTrans, Vector4& vectorSc
     S.value[2][2] = vectorScaling.value[2];
 
     return (T * R) * S;
+}
+
+// ------------------- Builder ------------------------
+
+Matrix4x4::Matrix4x4()
+{
+    for (int i = 0; i < 4; i++)
+        this->value.push_back(vector<float>(4, 0.f));
 }

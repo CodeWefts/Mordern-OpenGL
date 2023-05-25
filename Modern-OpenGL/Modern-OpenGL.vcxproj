@@ -105,7 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>./Externals/include;./Externals/include/ImGui;./Source/include/Core/Maths;./Source/include/Core/Debug;./Assets;./Source/include/Ressources;./Source/include/LowRenderer;./Source/include/Physics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./Externals/include;./Externals/include/ImGui;./Source/include/Core/Maths;./Source/include/Core/FolderDebug;./Assets;./Source/include/Ressources;./Source/include/LowRenderer;./Source/include/Physics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -123,7 +123,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>./Externals/include;./Externals/include/ImGui;./Source/include/Core/Maths;./Source/include/Core/Debug;./Assets;./Source/include/Ressources;./Source/include/LowRenderer;./Source/include/Physics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./Externals/include;./Externals/include/ImGui;./Source/include/Core/Maths;./Source/include/Core/FolderDebug;./Assets;./Source/include/Ressources;./Source/include/LowRenderer;./Source/include/Physics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -144,8 +144,8 @@
     <ClCompile Include="Externals\src\ImGui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Externals\src\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="Source\src\Core\DataStructure\graph.cpp" />
-    <ClCompile Include="Source\src\Core\Debug\assertion.cpp" />
-    <ClCompile Include="Source\src\Core\Debug\log.cpp" />
+    <ClCompile Include="Source\src\Core\FolderDebug\assertion.cpp" />
+    <ClCompile Include="Source\src\Core\FolderDebug\log.cpp" />
     <ClCompile Include="Source\src\Core\Maths\mat4.cpp" />
     <ClCompile Include="Source\src\Core\Maths\vec.cpp" />
     <ClCompile Include="Source\src\Core\Maths\vec2.cpp" />
@@ -160,8 +160,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\include\Core\DataStructure\graph.h" />
-    <ClInclude Include="Source\include\Core\Debug\assertion.h" />
-    <ClInclude Include="Source\include\Core\Debug\log.h" />
+    <ClInclude Include="Source\include\Core\FolderDebug\assertion.h" />
+    <ClInclude Include="Source\include\Core\FolderDebug\log.h" />
     <ClInclude Include="Source\include\Core\Maths\mat4.h" />
     <ClInclude Include="Source\include\Core\Maths\vec.h" />
     <ClInclude Include="Source\include\Core\Maths\vec2.h" />

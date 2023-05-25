@@ -3,7 +3,7 @@
 // ------------------------- Function -----------------------------------
 
 template <typename T> 
-T* ResourcesManager::Create(string const& filename)
+T* ResourcesManager::Create(filesystem::path const& filename)
 {
 
 
@@ -11,7 +11,7 @@ T* ResourcesManager::Create(string const& filename)
 }
 
 template <typename T>
-T* ResourcesManager::Get(string const& filename)
+T* ResourcesManager::Get(filesystem::path const& filename)
 {
 
 
@@ -20,7 +20,7 @@ T* ResourcesManager::Get(string const& filename)
 }
 
 
-void ResourcesManager::Delete(string const& filename)
+void ResourcesManager::Delete(filesystem::path const& filename)
 {
 
 }

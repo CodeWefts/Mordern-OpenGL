@@ -21,6 +21,14 @@ void ResourcesManager::Delete(string const& filename)
 	}
 }
 
+void IResource::LoadResource(string const& filename)
+{
+
+}
+void IResource::UnloadResource()
+{
+
+}
 
 // -------------------------- Builder --------------------------------
 

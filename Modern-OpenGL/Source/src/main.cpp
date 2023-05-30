@@ -8,6 +8,7 @@
 #include "ImGui/imgui_impl_opengl3.h"
 
 #include <log.h>
+#include <model.h>
 
 bool SetupGlfw()
 {
@@ -110,8 +111,13 @@ int main(int argc, char** argv)
 
     DEBUG_LOG("test \n");
 
-    file.OpenFile("./Assets/log/test");
-    file.Print("Mot de passe : %c ;  %c", '1', '2');
+    Model test;
+
+    test.LoadResource("./Assets/meshes/cube.obj");
+
+
+
+    
 
     // --------------------------- Main loop -------------------------
 

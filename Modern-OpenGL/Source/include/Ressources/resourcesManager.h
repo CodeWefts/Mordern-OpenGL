@@ -13,11 +13,11 @@ class IResource
 
 public:
 
-	virtual void LoadResource();
+	IResource();
+
+	virtual void LoadResource(string const& filename);
 	virtual void UnloadResource();
 
-
-	IResource();
 };
 
 class ResourcesManager
@@ -44,6 +44,8 @@ public:
 	template <typename T>
 	T* Get(string const& filename)
 	{
+
+		// Range of "dictionary"
 		for (auto it = resources.begin(); it != resources.end(); ++it)
 		{
 			if (it->first == filename)

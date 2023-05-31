@@ -2,16 +2,18 @@
 
 #include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <unordered_map>
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 
 using namespace std;
 
 class IResource
 {
-
-
 
 public:
 

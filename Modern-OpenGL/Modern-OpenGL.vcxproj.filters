@@ -90,9 +90,6 @@
     <ClCompile Include="Source\src\LowRenderer\mesh.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="Assets\shaders\fragmentShaderSource.shader">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\include\Core\Maths\mat4.h">
@@ -149,5 +146,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\shaders\vertexShaderSource.shader" />
+    <None Include="Assets\shaders\fragmentShaderSource.shader" />
   </ItemGroup>
 </Project>

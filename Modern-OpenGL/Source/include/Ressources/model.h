@@ -15,6 +15,20 @@ struct Vertex
 
 bool operator==(const Vertex& vx1 , const Vertex& vx2);
 
+class Buffer
+{
+
+public:
+	unsigned int VBO, VAO, EBO;
+
+	Buffer();
+
+	void BufferGL(float* vertices, unsigned int* indices);
+
+
+};
+
+
 class Model : IResource
 {
 	vector<Vertex> vertexBufferObj;
@@ -22,9 +36,16 @@ class Model : IResource
 
 public:
 
+	Buffer modelBuffer;
+
+
 
 	Model();
+
 	void LoadResource(string const& filename) override;
 
 
+
+
 };
+

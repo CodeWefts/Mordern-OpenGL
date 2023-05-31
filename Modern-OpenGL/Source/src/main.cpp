@@ -9,6 +9,7 @@
 
 #include <log.h>
 #include <model.h>
+#include <shader.h>
 
 bool SetupGlfw()
 {
@@ -115,9 +116,7 @@ int main(int argc, char** argv)
 
     test.LoadResource("./Assets/meshes/cube.obj");
 
-
-
-    
+    Shader shad("./Assets/shaders/vertexShaderSource.shader","./Assets/shaders/fragmentShaderSource.shader");
 
     // --------------------------- Main loop -------------------------
 
@@ -129,10 +128,15 @@ int main(int argc, char** argv)
         glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glfwSwapBuffers(window);
         StartImGuiFrame();
+
+
+
+        glfwSwapBuffers(window);
         glfwPollEvents();
         
+
+
 
     }
 

@@ -136,7 +136,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Assets\shaders\fragmentShaderSource.shader" />
     <ClCompile Include="Externals\src\glad\glad.c" />
     <ClCompile Include="Externals\src\ImGui\imgui.cpp" />
     <ClCompile Include="Externals\src\ImGui\imgui_demo.cpp" />
@@ -183,6 +182,7 @@
     <ClInclude Include="Source\include\Ressources\texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\shaders\fragmentShaderSource.shader" />
     <None Include="Assets\shaders\vertexShaderSource.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

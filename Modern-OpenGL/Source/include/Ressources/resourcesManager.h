@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <unordered_map>
 
@@ -9,6 +10,7 @@ using namespace std;
 
 class IResource
 {
+
 
 
 public:

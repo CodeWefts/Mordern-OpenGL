@@ -1,5 +1,4 @@
 #include <model.h>
-#include <fstream>
 
 // ------------------ Operator -----------------------------
 
@@ -93,11 +92,6 @@ void Model::LoadResource(string const& filename)
 
                 }
             }
-        }
-
-        for (auto i = 0; i < indexBuffer.size(); i++)
-        {
-            cout << indexBuffer[i] << endl;
         }
     }
     else

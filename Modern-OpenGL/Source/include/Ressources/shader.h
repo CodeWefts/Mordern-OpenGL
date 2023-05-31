@@ -7,10 +7,18 @@ using namespace std;
 class Shader : IResource
 {
 
+	int success;
+	char infoLog[512];
 
+
+	unsigned int fragmentShader;
+	unsigned int vertexShader;
 public:
 
 	Shader();
+
+	//loader
+	string LoadShader(filesystem::path const& filename);
 
 	//read GLSL file
 	bool SetVertexShader(filesystem::path const& filename);
@@ -18,6 +26,9 @@ public:
 
 	//ShaderProgram
 	bool Link();
+
+	//Buffer
+
 
 
 };

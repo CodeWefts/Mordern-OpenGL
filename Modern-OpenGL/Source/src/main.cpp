@@ -108,36 +108,37 @@ int main(int argc, char** argv)
 
     SetupImGui(window);
 
+    glEnable(GL_DEPTH_TEST);
+
     Log file;
+    Model cube;
 
     DEBUG_LOG("test \n");
-
-    Model test;
-
-    test.LoadResource("./Assets/meshes/cube.obj");
-
+    cube.LoadResource("./Assets/meshes/cube.obj");
     Shader shad("./Assets/shaders/vertexShaderSource.shader","./Assets/shaders/fragmentShaderSource.shader");
+
+
 
     // --------------------------- Main loop -------------------------
 
     while (!glfwWindowShouldClose(window))
     {
-        //Escape input
+        //input
         processInput(window);
 
+        //rederer
         glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         StartImGuiFrame();
+        shad.use();
 
+
+        cube.BufferGL(cube.vertexBufferObj, cube.indexBuffer);
 
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-        
-
-
-
     }
 
     

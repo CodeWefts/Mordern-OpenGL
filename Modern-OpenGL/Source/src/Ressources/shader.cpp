@@ -36,10 +36,10 @@ bool Shader::SetVertexShader(filesystem::path const& filename)
 		return false;
 
 	}
+
 	cout << "ERROR::SHADER::VERTEX::COMPILATION_SUCCED\n" << endl;
 
 	return true;
-
 }
 
 bool  Shader::SetFragmentShader(filesystem::path const& filename)
@@ -65,19 +65,25 @@ bool  Shader::SetFragmentShader(filesystem::path const& filename)
 	return true;
 }
 
+void Shader::use() const
+{
+	glUseProgram(id);
+}
+
 bool Shader::Link()
 {
-	ID = glCreateProgram();
-	glAttachShader(ID, vertexShader);
-	glAttachShader(ID, fragmentShader);
-	glLinkProgram(ID);
+	id = glCreateProgram();
+	glAttachShader(id, vertexShader);
+	glAttachShader(id, fragmentShader);
+	glLinkProgram(id);
+
 	// check for linking errors
-	glGetProgramiv(ID, GL_LINK_STATUS, &success);
+	glGetProgramiv(id, GL_LINK_STATUS, &success);
+
 	if (!success) {
-		glGetProgramInfoLog(ID, 1024, NULL, infoLog);
+		glGetProgramInfoLog(id, 1024, NULL, infoLog);
 		cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << endl;
 		return false;
-
 	}
 
 	// delete the shaders as they're linked into our program now and no longer necessary

@@ -14,7 +14,7 @@ private:
 
 public:
 
-	vector<float> value;
+	vector<float>      value;
 	Vector3();
 
 	friend ostream& operator<<(ostream& stream, const Vector3& vector);

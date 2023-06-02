@@ -1,4 +1,10 @@
 #include <model.h>
+#include <log.h>
+
+#include <fstream>
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 // ------------------ Operator -----------------------------
 
@@ -49,8 +55,6 @@ void Model::BufferGL(vector<Vertex> vertices, vector<uint32_t> indices)
 
 void Model::LoadResource(string const& filename)
 {
-	ResourcesManager resource;
-	IResource* a = resource.Get<IResource>(filename);
 	ifstream file;
 
     //ephemeral vectors
@@ -132,6 +136,10 @@ void Model::LoadResource(string const& filename)
     }
 }
 
+void Model::UnloadResource()
+{
+
+}
 
 
 void Model::Draw(Shader& shader)
@@ -177,7 +185,6 @@ void Model::Draw(Shader& shader)
 
 // --------------------- Builder -------------------------
 
-Model::Model(string const& path)
+Model::Model()
 {
-    LoadResource(path);
 }

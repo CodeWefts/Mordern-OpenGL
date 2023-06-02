@@ -1,9 +1,11 @@
 #pragma once
 #include <shader.h>
+#include <texture.h>
+
+
 #include <vector>
 #include <vec3.h>
 #include <vec2.h>
-
 
 
 struct Vertex
@@ -13,20 +15,19 @@ struct Vertex
 	Vector2 textureUV;
 };
 
-struct Texture {
-	unsigned int       id;
-	string             type; // can be "texture_diffuse" or "texture_specular" or "texture_normal" or "texture_height"
-	string             path;
-};
 
 bool operator==(const Vertex& vx1 , const Vertex& vx2);
 
 
-class Model : IResource
+class Model : public IResource
 {
-	void LoadResource(string const& filename) override;
 
 public:
+	Model();
+
+	void LoadResource(string const& filename);
+	void UnloadResource();
+
 	unsigned int VBO, VAO, EBO;
 
 	vector<Vertex>     vertexBufferObj;
@@ -37,8 +38,7 @@ public:
 	void BufferGL(vector<Vertex> vertices, vector<uint32_t> indices);
 
 
-	Model(string const& path);
-
 	void Draw(Shader& shader);
+
 
 };

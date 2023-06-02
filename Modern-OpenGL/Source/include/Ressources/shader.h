@@ -1,13 +1,13 @@
 #pragma once
-#include <resourcesManager.h>
+#include <iresource.h>
 #include <filesystem>
 
 
 using namespace std;
 
-class Shader : IResource
+class Shader : public IResource
 {
-
+private:
 	int            success;
 	char           infoLog[512];
 
@@ -24,7 +24,10 @@ class Shader : IResource
 public:
 	unsigned int id;
 
-	Shader(const char* vertexPath, const char* fragmentPath);
+	Shader();
+
+	void LoadResource(string const& filename);
+	void UnloadResource();
 
 	// activate the shader
 	// ------------------------------------------------------------------------
@@ -34,7 +37,8 @@ public:
 	//ShaderProgram
 	bool Link();
 
-	//Buffer
+	//SetUp
+	void SetUpShaders(const char* vertexPath, const char* fragmentPath);
 
 
 

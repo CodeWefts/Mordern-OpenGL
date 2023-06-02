@@ -1,6 +1,9 @@
 #include <shader.h>
+#include <log.h>
 
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 // ------------- Function ---------------
 
 string Shader::LoadShader(filesystem::path const& filename)
@@ -22,6 +25,7 @@ bool Shader::SetVertexShader(filesystem::path const& filename)
 	string vertexShaderSTR = LoadShader(filename);
 	const char* vertexShaderCHAR = vertexShaderSTR.c_str();
 
+
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderCHAR, NULL);
 	glCompileShader(vertexShader);
@@ -37,7 +41,7 @@ bool Shader::SetVertexShader(filesystem::path const& filename)
 
 	}
 
-	cout << "ERROR::SHADER::VERTEX::COMPILATION_SUCCED\n" << endl;
+	cout << "SHADER::VERTEX::COMPILATION_SUCCED\n" << endl;
 
 	return true;
 }
@@ -61,7 +65,7 @@ bool  Shader::SetFragmentShader(filesystem::path const& filename)
 		return false;
 	}
 
-	cout << "ERROR::SHADER::FRAGMENT::COMPILATION_SUCCED\n" <<endl;
+	cout << "SHADER::FRAGMENT::COMPILATION_SUCCED\n" <<endl;
 	return true;
 }
 
@@ -86,6 +90,8 @@ bool Shader::Link()
 		return false;
 	}
 
+	cout << "LINK::FRAGMENT::COMPILATION_SUCCED\n" << endl;
+
 	// delete the shaders as they're linked into our program now and no longer necessary
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
@@ -94,31 +100,46 @@ bool Shader::Link()
 
 }
 
-// ------------ Builder -----------------
-
-Shader::Shader(const char* vertexPath, const char* fragmentPath)
+void Shader::SetUpShaders(const char* vertexPath, const char* fragmentPath)
 {
-    // retrieve the vertex/fragment source code from filePath
-    string vertexCode;
-    string fragmentCode;
+	// retrieve the vertex/fragment source code from filePath
+	string vertexCode;
+	string fragmentCode;
 
-    ifstream vShaderFile;
-    ifstream fShaderFile;
+	ifstream vShaderFile;
+	ifstream fShaderFile;
 
-    // ensure ifstream objects can throw exceptions:
-    vShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
-    fShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
+	// ensure ifstream objects can throw exceptions:
+	vShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
+	fShaderFile.exceptions(ifstream::failbit | ifstream::badbit);
 
-    const char* vShaderCode = vertexCode.c_str();
-    const char* fShaderCode = fragmentCode.c_str();
+	const char* vShaderCode = vertexCode.c_str();
+	const char* fShaderCode = fragmentCode.c_str();
 
-    // vertex shader
+	// vertex shader
 	SetVertexShader(vertexPath);
 
-    // fragment Shader
+	// fragment Shader
 	SetFragmentShader(fragmentPath);
 
-    // shader Program
+	// shader Program
 	Link();
+
+}
+
+
+// ------------ Builder -----------------
+
+Shader::Shader()
+{
+}
+
+
+void Shader::LoadResource(string const& filename)
+{
+
+}
+void Shader::UnloadResource()
+{
 
 }

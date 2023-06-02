@@ -1,30 +1,18 @@
 #pragma once
 
 #include <iostream>
-#include <fstream>
-#include <iostream>
 #include <string>
 #include <unordered_map>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include <log.h>
+#include <iresource.h>
+#include <shader.h>
+#include <model.h>
 
 
 using namespace std;
 
-class IResource
-{
 
-public:
-
-	IResource();
-
-	virtual void LoadResource(string const& filename);
-	virtual void UnloadResource();
-
-};
 
 class ResourcesManager
 {
@@ -36,18 +24,22 @@ public:
 
 	ResourcesManager();
 
-	template <typename T>
-	T* Create(string const& filename)
+	template <class T>
+	T* Create(const string& name, const string& path)
 	{
+		
 		T* resource = new T;
+		resource->LoadResource(path);
+		
 
-		Delete(filename);
+		Delete(name);
 
-		resources.emplace(filename, resource);
-
+		resources.emplace(name, resource);
+		
 		return resource;
 	}
-	template <typename T>
+
+	template <class T>
 	T* Get(string const& filename)
 	{
 

@@ -1,5 +1,4 @@
 #include <mat4.h>
-#include <vec4.h>
 
 #include <assert.h>
 
@@ -75,9 +74,39 @@ Matrix4x4 Matrix4x4::IdentityMatrix()
     return *this;
 }
 
+Matrix4x4 Matrix4x4::translateMatrix(Vector3& vec)
+{
+    for (int j = 0; j < 3; j++)
+    {
+        this->value[j][3] = vec.value[j];
+    }
 
+    return *this;
+}
 
-Matrix4x4 Matrix4x4::rotationMatrix3X3(float_t x, float_t y, float_t z, float_t angle)
+Matrix4x4 Matrix4x4::transposeMatrix()
+{
+    Matrix4x4 trans;
+
+    for (int j = 0; j < 4; j++)
+    {
+        Vector4 vec;
+
+        for (int i = 0; i < 4; i++)
+        {
+            vec.value[i] = this->value[i][j];
+        }
+
+        trans.value[j] = vec.value;
+        
+    }
+    
+    this->value = trans.value;
+
+    return *this;
+}
+
+Matrix4x4 Matrix4x4::rotate(float_t x, float_t y, float_t z, float_t angle)
 {
     Matrix4x4 newMatrix;
 
@@ -85,10 +114,23 @@ Matrix4x4 Matrix4x4::rotationMatrix3X3(float_t x, float_t y, float_t z, float_t 
     {
         {x * x * (1 - cosf(angle)) + cosf(angle), y * x * (1 - cosf(angle)) - z * sinf(angle), z * x * (1 - cosf(angle)) + y * sinf(angle)} ,
         {x * y * (1 - cosf(angle)) + z * sinf(angle), y * y * (1 - cosf(angle)) + cosf(angle), z * y * (1 - cosf(angle)) - x * sinf(angle)} ,
-        {x * z * (1 - cosf(angle)) - y * sinf(angle), y * z * (1 - cosf(angle)) - x * sinf(angle), z * z * (1 - cosf(angle)) + cosf(angle)}
+        {x * z * (1 - cosf(angle)) - y * sinf(angle), y * z * (1 - cosf(angle)) - x * sinf(angle), z * z * (1 - cosf(angle)) + cosf(angle)},
+        {0,0,0,1}
     };
 
-    return newMatrix;
+    Matrix4x4 test;
+    test = *this * newMatrix;
+
+    this->value = test.value;
+
+    return *this;
+}
+
+Matrix4x4 Matrix4x4::rotate(float time, Vector3& vec)
+{
+
+
+    return *this;
 }
 
 Matrix4x4 Matrix4x4::TRS(Vector4& angle, Vector4& vectorTrans, Vector4& vectorScaling, Vector4& axes)
@@ -106,11 +148,11 @@ Matrix4x4 Matrix4x4::TRS(Vector4& angle, Vector4& vectorTrans, Vector4& vectorSc
 
     //ROTATION
     Matrix4x4 rX, rY, rZ;
-    rX = rotationMatrix3X3(axes.value[0], 0, 0, angle.value[0]);
-    rY = rotationMatrix3X3(0, axes.value[1], 0, angle.value[1]);
-    rZ = rotationMatrix3X3(0, 0, axes.value[2], angle.value[2]);
+    rX = rotate(axes.value[0], 0, 0, angle.value[0]);
+    rY = rotate(0, axes.value[1], 0, angle.value[1]);
+    rZ = rotate(0, 0, axes.value[2], angle.value[2]);
 
-    rotation = rZ * (rX * rY);
+    rotation = rZ * (rY * rX);
 
     R.value =
     {
@@ -127,6 +169,18 @@ Matrix4x4 Matrix4x4::TRS(Vector4& angle, Vector4& vectorTrans, Vector4& vectorSc
     S.value[2][2] = vectorScaling.value[2];
 
     return (T * R) * S;
+}
+
+float* Matrix4x4::Array()
+{
+    float array[] = {
+        value[0][0], value[0][1], value[0][2], value[0][3],
+        value[1][0], value[1][1], value[1][2], value[1][3],
+        value[2][0], value[2][1], value[2][2], value[2][3],
+        value[3][0], value[3][1], value[3][2], value[3][3]
+    };
+
+    return array;
 }
 
 // ------------------- Builder ------------------------

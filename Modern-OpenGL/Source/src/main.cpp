@@ -9,9 +9,9 @@
 
 #include <log.h>
 #include <model.h>
-#include <shader.h>
 #include <resourcesManager.h>
-#include <texture.h>
+
+#include <mat4.h>
 
 bool SetupGlfw()
 {
@@ -27,6 +27,7 @@ bool SetupGlfw()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     glfwWindowHint(GLFW_CENTER_CURSOR, true);
     glfwWindowHint(GLFW_MAXIMIZED, true);
 
@@ -38,9 +39,17 @@ GLFWwindow* CreateWindow()
     return glfwCreateWindow(800, 600, "Modern-OpenGL", nullptr, nullptr);
 }
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
+}
+
 bool SetupWindow(GLFWwindow* window)
 {
     glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -112,26 +121,24 @@ int main(int argc, char** argv)
 
 
     Log file;
-    DEBUG_LOG("test \n");
-
     ResourcesManager resourceManager;
-
     Shader* myShader = resourceManager.Create<Shader>("Shader", "");
+
     myShader->SetUpShaders("./Assets/shaders/vertexShaderSource.shader", "./Assets/shaders/fragmentShaderSource.shader");
 
-    Model* model = resourceManager.Create<Model>("ModelCube", "./Assets/meshes/cube.obj");
+    //Model* model = resourceManager.Create<Model>("ModelCube", "./Assets/meshes/cube.obj");
     
     
     // -------------------------------- TEST -------------------------------------------
 
-
     float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+        // positions          // texture coords
+         0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
+        -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left 
     };
+    
     unsigned int indices[] = {
         0, 1, 3, // first triangle
         1, 2, 3  // second triangle
@@ -152,20 +159,22 @@ int main(int argc, char** argv)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+
     // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
     
 
     // ----------------------- Texture --------------------
 
-    Texture* texture = resourceManager.Create<Texture>("Container", "./Assets/textures/container.jpg");
-
+    Texture* texture1 = resourceManager.Create<Texture>("Container", "./Assets/textures/container.jpg");
+    Texture* texture2 = resourceManager.Create<Texture>("Awesomeface", "./Assets/textures/awesomeface.png");
+    
+    myShader->use();
+    myShader->setInt("texture1", 0);
+    myShader->setInt("texture2", 1);
 
     // --------------------------- Main loop -------------------------
 
@@ -174,18 +183,36 @@ int main(int argc, char** argv)
         //input
         processInput(window);
 
-        //rederer
+        //reder
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        StartImGuiFrame();
+        //StartImGuiFrame();
         
+        // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture->texture);
+        glBindTexture(GL_TEXTURE_2D, texture1->texture);
 
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2->texture);
+        
+        // create transformations
+        Matrix4x4 trans;
+        trans.IdentityMatrix();
+
+        Vector3 vecTrans;
+        vecTrans.value = { 0.5f, -0.5f, 0.0f };
+
+        Vector3 vecRot;
+        vecRot.value = { 0.0f, 0.0f, 1.0f };
+
+        trans.translateMatrix(vecTrans);
+        trans.rotate(vecRot.value[0], vecRot.value[1], vecRot.value[2],(float)glfwGetTime());
+        
         myShader->use();
+        myShader->setMat4("transform", trans);
 
-
+        
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

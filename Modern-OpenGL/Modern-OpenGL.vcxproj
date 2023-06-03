@@ -188,6 +188,7 @@
     <None Include="Assets\shaders\vertexShaderSource.shader" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\textures\awesomeface.png" />
     <Image Include="Assets\textures\container.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

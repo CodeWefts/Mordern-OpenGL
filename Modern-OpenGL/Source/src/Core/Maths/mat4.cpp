@@ -73,6 +73,22 @@ Matrix4x4 Matrix4x4::IdentityMatrix()
 
     return *this;
 }
+Matrix4x4 Matrix4x4::Diag(float_t value)
+{
+
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+        {
+            if (i == j)
+                this->value[i][j] = value;
+
+            else
+                this->value[i][j] = 0;
+
+        }
+
+    return *this;
+}
 
 Matrix4x4 Matrix4x4::translateMatrix(Vector3& vec)
 {
@@ -169,6 +185,25 @@ Matrix4x4 Matrix4x4::TRS(Vector4& angle, Vector4& vectorTrans, Vector4& vectorSc
     S.value[2][2] = vectorScaling.value[2];
 
     return (T * R) * S;
+}
+
+Matrix4x4 Matrix4x4::Perspective(const float& fov, const float& aspect, const float& near, const float& far)
+{
+    const float tanHalfFov = tan(fov / 2.f);
+
+    Matrix4x4 projMatrix;
+
+    projMatrix.value = {
+        { 1 / (aspect * tanHalfFov), 0, 0, 0 },
+        { 0, 1 / tanHalfFov, 0, 0 },
+        { 0, 0, -(far + near) / (far - near), -(2 * far * near) / (far - near) },
+        { 0, 0, -1, 0 }
+    };
+
+
+    this->value = projMatrix.value;
+
+    return *this;
 }
 
 float* Matrix4x4::Array()

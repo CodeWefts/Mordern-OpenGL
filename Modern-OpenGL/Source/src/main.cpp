@@ -13,6 +13,12 @@
 
 #include <mat4.h>
 
+#define PI 3.14159265359f
+#define TO_RAD(var) ((var * PI) / 180.f)
+
+const int WIDTH = 800;
+const int HEIGHT = 600;
+
 bool SetupGlfw()
 {
     glfwSetErrorCallback([](int error, const char* description)
@@ -36,7 +42,7 @@ bool SetupGlfw()
 
 GLFWwindow* CreateWindow()
 {
-    return glfwCreateWindow(800, 600, "Modern-OpenGL", nullptr, nullptr);
+    return glfwCreateWindow(WIDTH, HEIGHT, "Modern-OpenGL", nullptr, nullptr);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -124,6 +130,8 @@ int main(int argc, char** argv)
     ResourcesManager resourceManager;
     Shader* myShader = resourceManager.Create<Shader>("Shader", "");
 
+    glEnable(GL_DEPTH_TEST);
+
     myShader->SetUpShaders("./Assets/shaders/vertexShaderSource.shader", "./Assets/shaders/fragmentShaderSource.shader");
 
     //Model* model = resourceManager.Create<Model>("ModelCube", "./Assets/meshes/cube.obj");
@@ -132,17 +140,50 @@ int main(int argc, char** argv)
     // -------------------------------- TEST -------------------------------------------
 
     float vertices[] = {
-        // positions          // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left 
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
     
-    unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
+    Vector3 cubePos;
 
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -154,9 +195,6 @@ int main(int argc, char** argv)
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -185,7 +223,7 @@ int main(int argc, char** argv)
 
         //reder
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //StartImGuiFrame();
         
@@ -196,25 +234,33 @@ int main(int argc, char** argv)
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2->texture);
         
-        // create transformations
-        Matrix4x4 trans;
-        trans.IdentityMatrix();
-
-        Vector3 vecTrans;
-        vecTrans.value = { 0.5f, -0.5f, 0.0f };
-
-        Vector3 vecRot;
-        vecRot.value = { 0.0f, 0.0f, 1.0f };
-
-        trans.translateMatrix(vecTrans);
-        trans.rotate(vecRot.value[0], vecRot.value[1], vecRot.value[2],(float)glfwGetTime());
-        
         myShader->use();
-        myShader->setMat4("transform", trans);
+
+
+        // create transformations
+        Matrix4x4 perspective;
+        perspective.IdentityMatrix();
+        perspective.Perspective(TO_RAD(45),(float)WIDTH / (float)HEIGHT, 0.1f,100.0f);
+
+        Matrix4x4 view; view.IdentityMatrix();
+        Vector3 vec; vec.value = { 0.0f, 0.0f, -3.0f };
+        view.translateMatrix(vec);
+
+        // pass transformation matrices to the shader
+        myShader->setMat4("projection", perspective); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+        myShader->setMat4("view", view);
 
         
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // calculate the model matrix for each object and pass it to shader before drawing
+        Matrix4x4 model; model.IdentityMatrix();
+        model.translateMatrix(cubePos);
+
+        Vector3 vec3; vec3.value = { 1.0f, 0.3f, 0.5f };
+        model.rotate(vec3.value[0], vec3.value[1], vec3.value[2], TO_RAD(20.0f));
+        myShader->setMat4("model", model);
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        
 
         glfwSwapBuffers(window);
         glfwPollEvents();

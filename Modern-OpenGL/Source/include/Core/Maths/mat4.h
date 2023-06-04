@@ -26,5 +26,6 @@ public:
 	Matrix4x4 rotate(float time, Vector3& vec);
 	Matrix4x4 TRS(Vector4& angle, Vector4& vectorTrans, Vector4& vectorScaling, Vector4& axes);
 	Matrix4x4 Perspective(const float& fov, const float& aspect, const float& near, const float& far);
+	Matrix4x4 scale(Vector3& vector);
 	float* Array();
 };

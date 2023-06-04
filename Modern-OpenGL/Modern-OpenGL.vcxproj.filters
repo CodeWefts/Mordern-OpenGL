@@ -151,8 +151,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\shaders\vertexShaderSource.shader" />
-    <None Include="Assets\shaders\fragmentShaderSource.shader" />
+    <None Include="Assets\shaders\lightFragmentSource.shader" />
+    <None Include="Assets\shaders\lightVertexSource.shader" />
+    <None Include="Assets\shaders\lightCubeFragmentSource.shader" />
+    <None Include="Assets\shaders\lightCubeVertexSource.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\textures\container.jpg">

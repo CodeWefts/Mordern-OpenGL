@@ -92,10 +92,14 @@ Matrix4x4 Matrix4x4::Diag(float_t value)
 
 Matrix4x4 Matrix4x4::translateMatrix(Vector3& vec)
 {
+    Matrix4x4 newMatrix;
+    newMatrix.IdentityMatrix();
     for (int j = 0; j < 3; j++)
     {
-        this->value[j][3] = vec[j];
+        newMatrix.value[j][3] = vec[j];
     }
+
+    this->value = (newMatrix * *this).value;
 
     return *this;
 }
@@ -104,6 +108,7 @@ Matrix4x4 Matrix4x4::translateMatrix(Vector3& vec)
 Matrix4x4 Matrix4x4::rotate(float_t x, float_t y, float_t z, float_t angle)
 {
     Matrix4x4 newMatrix;
+    newMatrix.IdentityMatrix();
 
     newMatrix.value =
     {
@@ -113,7 +118,7 @@ Matrix4x4 Matrix4x4::rotate(float_t x, float_t y, float_t z, float_t angle)
         {0,0,0,1}
     };
 
-    this->value = newMatrix.value;
+    this->value = (*this * newMatrix).value;
     return *this;
 }
 
@@ -177,6 +182,21 @@ Matrix4x4 Matrix4x4::Perspective(const float& fov, const float& aspect, const fl
 
 
     this->value = projMatrix.value;
+
+    return *this;
+}
+
+Matrix4x4 Matrix4x4::scale(Vector3& vector)
+{
+    Matrix4x4 newMatrix;
+    newMatrix.value = {
+        {vector.x, 0, 0, 0},
+        {0 ,vector.y, 0, 0}, 
+        {0,0,vector.z, 0},
+        {0,0,0,1}
+    };
+
+    this->value = (*this * newMatrix).value;
 
     return *this;
 }

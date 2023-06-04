@@ -29,21 +29,19 @@ void Texture::LoadResource(string const& filename)
     unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
     if (data)
     {
-        if (nrChannels == 4)
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-            DEBUG_LOG("FILE_TEXTURE_CHANNEL_4");
+        GLenum format;
+        if (nrChannels == 1)
+            format = GL_RED;
+        else if (nrChannels == 3)
+            format = GL_RGB;
+        else if (nrChannels == 4)
+            format = GL_RGBA;
 
-        }
-        else 
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            DEBUG_LOG("FILE_TEXTURE_CHANNEL_3");
-        }
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
 
         // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
         glGenerateMipmap(GL_TEXTURE_2D);
-
         DEBUG_LOG("FILE_TEXTURE_LOAD_SUCCED");
 
 

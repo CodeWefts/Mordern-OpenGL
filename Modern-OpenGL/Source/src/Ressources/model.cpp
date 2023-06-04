@@ -10,8 +10,8 @@
 
 bool operator==(const Vertex& vx1, const Vertex& vx2)
 {
-    return vx1.position.value == vx2.position.value &&
-        vx1.normal.value == vx2.normal.value &&
+    return vx1.position == vx2.position &&
+        vx1.normal == vx2.normal &&
         vx1.textureUV.value == vx2.textureUV.value;
 
 }
@@ -74,14 +74,14 @@ void Model::LoadResource(string const& filename)
             if (c == "v")//positions vertex
             {
                 Vector3 pos;
-                file >> pos.value[0] >> pos.value[1] >> pos.value[2];
+                file >> pos[0] >> pos[1] >> pos[2];
 
                 positions.push_back(pos);
             }
             else if (c == "vn")//normals vertex
             {
                 Vector3 pos;
-                file >> pos.value[0] >> pos.value[1] >> pos.value[2];
+                file >> pos[0] >> pos[1] >> pos[2];
 
                 normals.push_back(pos);
             }

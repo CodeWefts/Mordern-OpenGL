@@ -22,7 +22,6 @@ public:
 	Matrix4x4 IdentityMatrix();
 	Matrix4x4 Diag(float_t value);
 	Matrix4x4 translateMatrix(Vector3& vec);
-	Matrix4x4 transposeMatrix();
 	Matrix4x4 rotate(float_t x, float_t y, float_t z, float_t angle);
 	Matrix4x4 rotate(float time, Vector3& vec);
 	Matrix4x4 TRS(Vector4& angle, Vector4& vectorTrans, Vector4& vectorScaling, Vector4& axes);

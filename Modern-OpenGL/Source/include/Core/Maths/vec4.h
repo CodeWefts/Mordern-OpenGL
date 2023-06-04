@@ -10,21 +10,18 @@ using namespace std;
 
 class Vector4
 {
-private:
-
 public:
 
-	vector<float> value;
+	float x;
+	float y;
+	float z;
+	float w;
+
 	Vector4();
-
-	friend ostream& operator<<(ostream& stream, const Vector4& vector);
-	Vector4 operator+(const Vector4& vector2);
-	Vector4 operator-(const Vector4& vector2);
-
-	float normVector();
-	Vector4 oppositeVector();
-	float scalarVector(Vector4 vector1);
-	float angleVector(Vector4 vector1);
-	float distVector(Vector4 vector1);
-
+	Vector4(float x, float y, float z, float w);
+	Vector4(float wxyz);
+	float& operator[](int i);
+	Vector4 operator*(const Vector4& vec);
+	Vector4 operator*(const float x);
+	float operator[](int i) const;
 };

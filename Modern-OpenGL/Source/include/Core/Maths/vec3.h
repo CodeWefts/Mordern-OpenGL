@@ -8,24 +8,31 @@
 
 using namespace std;
 
+
+
 class Vector3
 {
-private:
-
 public:
+	float x;
+	float y;
+	float z;
 
-	vector<float>      value;
 	Vector3();
+	Vector3(float x, float y, float z);
+	Vector3(float xyz);
 
-	friend ostream& operator<<(ostream& stream, const Vector3& vector);
-	Vector3 operator+(const Vector3& vector2);
-	Vector3 operator-(const Vector3& vector2);
+	float& operator[](int i);
+	float operator[](int i) const;
+	friend bool operator==(const Vector3& vx1, const Vector3& vx2);
 
-	float normVector();
-	Vector3 oppositeVector();
-	float scalarVector(Vector3 vector1);
-	float angleVector(Vector3 vector1);
-	Vector3 crossVector3(Vector3 vector1);
-	float distVector(Vector3 vector1);
 
+	Vector3 operator-(const Vector3& vector) const;
+	Vector3 operator-() const;
+	Vector3 operator*(const float number) const;
+	Vector3 operator+(const Vector3& vector);
+	Vector3 Normalize() const;
+	static Vector3 CrossProduct(Vector3 a, Vector3 b);
+	double normVector() const;
+	static float DotProduct(const Vector3& a, const Vector3& b);
+	Vector3 operator*(const Vector3& vec) const;
 };

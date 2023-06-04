@@ -46,7 +46,7 @@ Vector4 Matrix4x4::operator*(const Vector4& vect)
     {
         for (int k = 0; k < 4; k++)
         {
-            multipMatrix.value[j] = multipMatrix.value[j] + (this->value[j][k] * vect.value[k]);
+            multipMatrix[j] = multipMatrix[j] + (this->value[j][k] * vect[k]);
         }
     }
 
@@ -94,33 +94,12 @@ Matrix4x4 Matrix4x4::translateMatrix(Vector3& vec)
 {
     for (int j = 0; j < 3; j++)
     {
-        this->value[j][3] = vec.value[j];
+        this->value[j][3] = vec[j];
     }
 
     return *this;
 }
 
-Matrix4x4 Matrix4x4::transposeMatrix()
-{
-    Matrix4x4 trans;
-
-    for (int j = 0; j < 4; j++)
-    {
-        Vector4 vec;
-
-        for (int i = 0; i < 4; i++)
-        {
-            vec.value[i] = this->value[i][j];
-        }
-
-        trans.value[j] = vec.value;
-        
-    }
-    
-    this->value = trans.value;
-
-    return *this;
-}
 
 Matrix4x4 Matrix4x4::rotate(float_t x, float_t y, float_t z, float_t angle)
 {
@@ -128,17 +107,13 @@ Matrix4x4 Matrix4x4::rotate(float_t x, float_t y, float_t z, float_t angle)
 
     newMatrix.value =
     {
-        {x * x * (1 - cosf(angle)) + cosf(angle), y * x * (1 - cosf(angle)) - z * sinf(angle), z * x * (1 - cosf(angle)) + y * sinf(angle)} ,
-        {x * y * (1 - cosf(angle)) + z * sinf(angle), y * y * (1 - cosf(angle)) + cosf(angle), z * y * (1 - cosf(angle)) - x * sinf(angle)} ,
-        {x * z * (1 - cosf(angle)) - y * sinf(angle), y * z * (1 - cosf(angle)) - x * sinf(angle), z * z * (1 - cosf(angle)) + cosf(angle)},
+        {x * x * (1 - cosf(angle)) + cosf(angle), y * x * (1 - cosf(angle)) - z * sinf(angle), z * x * (1 - cosf(angle)) + y * sinf(angle),0} ,
+        {x * y * (1 - cosf(angle)) + z * sinf(angle), y * y * (1 - cosf(angle)) + cosf(angle), z * y * (1 - cosf(angle)) - x * sinf(angle),0} ,
+        {x * z * (1 - cosf(angle)) - y * sinf(angle), y * z * (1 - cosf(angle)) + x * sinf(angle), z * z * (1 - cosf(angle)) + cosf(angle),0},
         {0,0,0,1}
     };
 
-    Matrix4x4 test;
-    test = *this * newMatrix;
-
-    this->value = test.value;
-
+    this->value = newMatrix.value;
     return *this;
 }
 
@@ -158,15 +133,15 @@ Matrix4x4 Matrix4x4::TRS(Vector4& angle, Vector4& vectorTrans, Vector4& vectorSc
 
     //TRANSLATE
     T.IdentityMatrix();
-    T.value[0][3] = vectorTrans.value[0];
-    T.value[1][3] = vectorTrans.value[1];
-    T.value[2][3] = vectorTrans.value[2];
+    T.value[0][3] = vectorTrans[0];
+    T.value[1][3] = vectorTrans[1];
+    T.value[2][3] = vectorTrans[2];
 
     //ROTATION
     Matrix4x4 rX, rY, rZ;
-    rX = rotate(axes.value[0], 0, 0, angle.value[0]);
-    rY = rotate(0, axes.value[1], 0, angle.value[1]);
-    rZ = rotate(0, 0, axes.value[2], angle.value[2]);
+    rX = rotate(axes[0], 0, 0, angle[0]);
+    rY = rotate(0, axes[1], 0, angle[1]);
+    rZ = rotate(0, 0, axes[2], angle[2]);
 
     rotation = rZ * (rY * rX);
 
@@ -180,9 +155,9 @@ Matrix4x4 Matrix4x4::TRS(Vector4& angle, Vector4& vectorTrans, Vector4& vectorSc
 
     //SCALING
     S.IdentityMatrix();
-    S.value[0][0] = vectorScaling.value[0];
-    S.value[1][1] = vectorScaling.value[1];
-    S.value[2][2] = vectorScaling.value[2];
+    S.value[0][0] = vectorScaling[0];
+    S.value[1][1] = vectorScaling[1];
+    S.value[2][2] = vectorScaling[2];
 
     return (T * R) * S;
 }

@@ -10,14 +10,26 @@
 #include <log.h>
 #include <model.h>
 #include <resourcesManager.h>
+#include <camera.h>
 
 #include <mat4.h>
 
 #define PI 3.14159265359f
 #define TO_RAD(var) ((var * PI) / 180.f)
 
-const int WIDTH = 800;
-const int HEIGHT = 600;
+// settings
+const int WIDTH = 1200;
+const int HEIGHT = 800;
+
+// camera
+Camera camera(Vector3(0.0f, 0.0f, 3.0f));
+float lastX = WIDTH / 2.0f;
+float lastY = HEIGHT / 2.0f;
+bool firstMouse = true;
+
+// timing
+float deltaTime = 0.0f;	// time between current frame and last frame
+float lastFrame = 0.0f;
 
 bool SetupGlfw()
 {
@@ -35,7 +47,7 @@ bool SetupGlfw()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     glfwWindowHint(GLFW_CENTER_CURSOR, true);
-    glfwWindowHint(GLFW_MAXIMIZED, true);
+    //glfwWindowHint(GLFW_MAXIMIZED, true);
 
     return true;
 }
@@ -52,10 +64,41 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+{
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    camera.ProcessMouseScroll(static_cast<float>(yoffset));
+}
+
 bool SetupWindow(GLFWwindow* window)
 {
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
+    // tell GLFW to capture our mouse
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -102,10 +145,25 @@ void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        camera.ProcessKeyboard(UP, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        camera.ProcessKeyboard(DOWN, deltaTime);
 }
+
 
 int main(int argc, char** argv)
 {
+
     // ----------------------- Setup Glfw window ---------------------
 
     if (!SetupGlfw())
@@ -133,9 +191,6 @@ int main(int argc, char** argv)
     glEnable(GL_DEPTH_TEST);
 
     myShader->SetUpShaders("./Assets/shaders/vertexShaderSource.shader", "./Assets/shaders/fragmentShaderSource.shader");
-
-    //Model* model = resourceManager.Create<Model>("ModelCube", "./Assets/meshes/cube.obj");
-    
     
     // -------------------------------- TEST -------------------------------------------
 
@@ -218,6 +273,12 @@ int main(int argc, char** argv)
 
     while (!glfwWindowShouldClose(window))
     {
+        // per-frame time logic
+        // --------------------
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         //input
         processInput(window);
 
@@ -237,27 +298,29 @@ int main(int argc, char** argv)
         myShader->use();
 
 
-        // create transformations
-        Matrix4x4 perspective;
-        perspective.IdentityMatrix();
-        perspective.Perspective(TO_RAD(45),(float)WIDTH / (float)HEIGHT, 0.1f,100.0f);
-
-        Matrix4x4 view; view.IdentityMatrix();
-        Vector3 vec; vec.value = { 0.0f, 0.0f, -3.0f };
-        view.translateMatrix(vec);
-
+        // ---------------------------  create transformations  -------------------------------------------------------------
+        
         // pass transformation matrices to the shader
-        myShader->setMat4("projection", perspective); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+        Matrix4x4 projection;
+        projection.Perspective(TO_RAD(45),(float)WIDTH / (float)HEIGHT, 0.1f,100.0f);
+        myShader->setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+
+        // camera/view transformation
+        Matrix4x4 view = camera.GetViewMatrix(); 
         myShader->setMat4("view", view);
 
-        
+        glBindVertexArray(VAO);
+
         // calculate the model matrix for each object and pass it to shader before drawing
         Matrix4x4 model; model.IdentityMatrix();
         model.translateMatrix(cubePos);
 
-        Vector3 vec3; vec3.value = { 1.0f, 0.3f, 0.5f };
-        model.rotate(vec3.value[0], vec3.value[1], vec3.value[2], TO_RAD(20.0f));
+        model.rotate(1, 0, 0, TO_RAD(20.0f));
+        model.rotate(0, 1, 0, TO_RAD(20.0f));
+        model.rotate(0, 0, 1, TO_RAD(20.0f));
         myShader->setMat4("model", model);
+
+        // -----------------------------------------------------------------------------------------------------------------
 
         glDrawArrays(GL_TRIANGLES, 0, 36);
         

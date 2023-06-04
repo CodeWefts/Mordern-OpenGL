@@ -52,7 +52,6 @@ void Texture::LoadResource(string const& filename)
     {
         DEBUG_LOG("ERROR::FILE_TEXTURE_LOAD_FAIL");
     }
-
     stbi_image_free(data);
 
 }

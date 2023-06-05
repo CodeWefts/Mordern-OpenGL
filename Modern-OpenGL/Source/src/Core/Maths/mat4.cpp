@@ -122,9 +122,20 @@ Matrix4x4 Matrix4x4::rotate(float_t x, float_t y, float_t z, float_t angle)
     return *this;
 }
 
-Matrix4x4 Matrix4x4::rotate(float time, Vector3& vec)
+Matrix4x4 Matrix4x4::rotate(float angle, Vector3& vec)
 {
+    Matrix4x4 newMatrix;
+    newMatrix.IdentityMatrix();
 
+    newMatrix.value =
+    {
+        {vec.x * vec.x * (1 - cosf(angle)) + cosf(angle), vec.y * vec.x * (1 - cosf(angle)) - vec.z * sinf(angle), vec.z * vec.x * (1 - cosf(angle)) + vec.y * sinf(angle),0} ,
+        {vec.x * vec.y * (1 - cosf(angle)) + vec.z * sinf(angle), vec.y * vec.y * (1 - cosf(angle)) + cosf(angle), vec.z * vec.y * (1 - cosf(angle)) - vec.x * sinf(angle),0} ,
+        {vec.x * vec.z * (1 - cosf(angle)) - vec.y * sinf(angle), vec.y * vec.z * (1 - cosf(angle)) + vec.x * sinf(angle), vec.z * vec.z * (1 - cosf(angle)) + cosf(angle),0},
+        {0,0,0,1}
+    };
+
+    this->value = (*this * newMatrix).value;
 
     return *this;
 }

@@ -31,8 +31,6 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-// lighting
-Vector3 lightPos(1.2f, 1.0f, 2.0f);
 
 bool SetupGlfw()
 {
@@ -190,7 +188,7 @@ int main(int argc, char** argv)
     Log file;
     ResourcesManager resourceManager;
     Shader* lightingShader = resourceManager.Create<Shader>("LightingShader", "");
-    Shader* lightCubeShader = resourceManager.Create<Shader>("lightCubeShader", "");
+    Shader* lightCubeShader = resourceManager.Create<Shader>("LightCubeShader", "");
 
     glEnable(GL_DEPTH_TEST);
 
@@ -243,7 +241,8 @@ int main(int argc, char** argv)
         -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
     };
-    
+    // positions all containers
+    Vector3 cubePositions;
 
     // first, configure the cube's VAO (and VBO)
     unsigned int VBO, cubeVAO;
@@ -258,7 +257,6 @@ int main(int argc, char** argv)
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
@@ -276,10 +274,12 @@ int main(int argc, char** argv)
     glEnableVertexAttribArray(0);
 
     // ---------- TEXTURE ----------------
-    Texture* texture1 = resourceManager.Create<Texture>("Container2","./Assets/textures/container2.png");
+    Texture* texture1 = resourceManager.Create<Texture>("Container2", "./Assets/textures/container2.png");
+    Texture* texture2 = resourceManager.Create<Texture>("Container2_Specular","./Assets/textures/container2_specular.png");
 
     lightingShader->use();
     lightingShader->setInt("material.diffuse", 0);
+    lightingShader->setInt("material.specular", 1);
 
     // --------------------------- Main loop -------------------------
     while (!glfwWindowShouldClose(window))
@@ -300,48 +300,36 @@ int main(int argc, char** argv)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         lightingShader->use();
-        lightingShader->setVec3("light.position", lightPos);
+        lightingShader->setVec3("light.position", camera.position);
+        lightingShader->setVec3("light.direction", camera.front);
+        lightingShader->setFloat("light.cutOff",cos(TO_RAD(12.5f)));
+        lightingShader->setFloat("light.outerCutOff", cos(TO_RAD(17.5f)));
         lightingShader->setVec3("viewPos", camera.position);
 
         // light properties
-        lightingShader->setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-        lightingShader->setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
+        lightingShader->setVec3("light.ambient", 0.1f, 0.1f, 0.1f);
+        lightingShader->setVec3("light.diffuse", 0.8f, 0.8f, 0.8f);
         lightingShader->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-
+        lightingShader->setFloat("light.constant", 1.0f);
+        lightingShader->setFloat("light.linear", 0.09f);
+        lightingShader->setFloat("light.quadratic", 0.032f);
         // material properties
-        lightingShader->setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-        lightingShader->setFloat("material.shininess", 64.0f);
+        lightingShader->setFloat("material.shininess", 32.0f);
 
         // ---------------------------  create transformations  -------------------------------------------------------------
         
+        /*
         Vector3 scaling(0.2f, 0.2f, 0.2f);
         Vector3 diffuse(0.5f, 0.5f, 0.5f);
         Vector3 ambient(0.2f, 0.2f, 0.2f);
 
-        Vector3 lightColor;
-        lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
-        lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
-        lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));
+        Vector3 lightColor(1.0f,1.0f,1.0f);
 
         Vector3 diffuseColor = lightColor * diffuse;
         Vector3 ambientColor = diffuseColor * ambient;
+        */
 
         // ---------------------- CUBE --------------------
-        lightingShader->use();
-        lightingShader->setVec3("light.position", lightPos);
-        lightingShader->setVec3("viewPos", camera.position);
-
-        lightingShader->setVec3("light.ambient", ambientColor);
-        lightingShader->setVec3("light.diffuse", diffuseColor);
-        lightingShader->setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-
-
-        // material properties
-        lightingShader->setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-        lightingShader->setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-        lightingShader->setVec3("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
-        lightingShader->setFloat("material.shininess", 32.0f);
-
         Matrix4x4 projection;
         projection.Perspective(TO_RAD(camera.Zoom), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
         lightingShader->setMat4("projection", projection);
@@ -353,22 +341,34 @@ int main(int argc, char** argv)
         model.IdentityMatrix();
         lightingShader->setMat4("model", model);
 
+        // bind diffuse map
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1->id);
+        // bind specular map
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2->id);
+
+
+        model.translateMatrix(cubePositions);
+        lightingShader->setMat4("model", model);
+
         glBindVertexArray(cubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-
+        
         // ----------------------- LIGHT CUBE ----------------
+        /*
         lightCubeShader->use();
         lightCubeShader->setMat4("projection", projection);
         lightCubeShader->setMat4("view", view);
         model.IdentityMatrix();
-        model.translateMatrix(lightPos);
-        model.scale(scaling); // a smaller cube
+        model.translateMatrix(camera.position);
+        //model.scale(scaling); // a smaller cube
         lightCubeShader->setMat4("model", model);
 
         glBindVertexArray(lightCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-
+        */
 
         glfwSwapBuffers(window);
         glfwPollEvents();

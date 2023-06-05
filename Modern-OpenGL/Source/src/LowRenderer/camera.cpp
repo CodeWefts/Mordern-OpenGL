@@ -48,6 +48,8 @@ Matrix4x4 Camera::GetViewMatrix()
 // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
 {
+
+    Vector3 worldUp(0.0f, 1.0f, 0.0f);
     float velocity = MovementSpeed * deltaTime;
     if (direction == FORWARD)
         position = position + (front * velocity);
@@ -58,9 +60,9 @@ void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
     if (direction == RIGHT)
         position = position + (right * velocity);
     if (direction == UP)
-        position = position + (up * velocity);
+        position = position + (worldUp * velocity);
     if (direction == DOWN)
-        position = position - (up * velocity);
+        position = position - (worldUp * velocity);
 }
 
 // processes input received from a mouse input system. Expects the offset value in both the x and y direction.

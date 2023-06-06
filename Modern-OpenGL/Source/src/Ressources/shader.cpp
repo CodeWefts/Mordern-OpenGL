@@ -34,12 +34,12 @@ bool Shader::SetVertexShader(filesystem::path const& filename)
 	if (!success)
 	{
 		glGetShaderInfoLog(vertexShader, 1024, NULL, infoLog);
-		cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << endl;
+		DEBUG_LOG( "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" , infoLog );
 		return false;
 
 	}
 
-	cout << "SHADER::VERTEX::COMPILATION_SUCCED\n" << endl;
+	DEBUG_LOG( "SHADER::VERTEX::COMPILATION_SUCCED\n");
 
 	return true;
 }
@@ -58,12 +58,12 @@ bool  Shader::SetFragmentShader(filesystem::path const& filename)
 	if (!success)
 	{
 		glGetShaderInfoLog(fragmentShader, 1024, NULL, infoLog);
-		cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << endl;
+		DEBUG_LOG( "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n", infoLog );
 
 		return false;
 	}
 
-	cout << "SHADER::FRAGMENT::COMPILATION_SUCCED\n" <<endl;
+	DEBUG_LOG( "SHADER::FRAGMENT::COMPILATION_SUCCED\n" );
 	return true;
 }
 
@@ -85,11 +85,11 @@ bool Shader::Link()
 
 	if (!success) {
 		glGetProgramInfoLog(id, 1024, NULL, infoLog);
-		cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << endl;
+		DEBUG_LOG("ERROR::SHADER::PROGRAM::LINKING_FAILED\n %s \n", infoLog);
 		return false;
 	}
 
-	cout << "LINK::FRAGMENT::COMPILATION_SUCCED\n" << endl;
+	DEBUG_LOG("LINK::FRAGMENT::COMPILATION_SUCCED\n");
 
 	// delete the shaders as they're linked into our program now and no longer necessary
 	glDeleteShader(vertexShader);

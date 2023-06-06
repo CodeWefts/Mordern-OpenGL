@@ -81,6 +81,20 @@ void Log::Print(const char* fmt, ...)
     va_end(args);
 }
 
+
+void Log::PrintFileLine(const source_location loc)
+{
+    uint32_t line = loc.line();
+
+    string fileName = loc.file_name();
+    fileName = fileName.substr(fileName.find_last_of(92) + 1);
+    string str = fileName + "(" + to_string(line) + ")";
+
+    cout << str <<  " ";
+    if (log.file)
+        log.file << str << " ";
+}
+
 // ----------------------------- Builder -------------------------------
 
 Log::Log()

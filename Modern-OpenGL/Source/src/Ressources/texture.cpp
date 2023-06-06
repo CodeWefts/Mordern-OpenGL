@@ -40,13 +40,13 @@ void Texture::LoadResource(string const& filename)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        DEBUG_LOG("FILE_TEXTURE_LOAD_SUCCED");
+        DEBUG_LOG("FILE_TEXTURE_LOAD_SUCCED\n");
 
 
     }
     else
     {
-        DEBUG_LOG("ERROR::FILE_TEXTURE_LOAD_FAIL");
+        DEBUG_LOG("ERROR::FILE_TEXTURE_LOAD_FAIL\n");
     }
     stbi_image_free(data);
 

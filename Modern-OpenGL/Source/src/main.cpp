@@ -11,6 +11,7 @@
 #include <model.h>
 #include <resourcesManager.h>
 #include <camera.h>
+#include <light.h>
 
 #include <mat4.h>
 
@@ -189,6 +190,8 @@ int main(int argc, char** argv)
 
     Log file;
     ResourcesManager resourceManager;
+    
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- SHADERS
     Shader* lightingShader = resourceManager.Create<Shader>("LightingShader", "");
     Shader* lightCubeShader = resourceManager.Create<Shader>("LightCubeShader", "");
 
@@ -197,8 +200,7 @@ int main(int argc, char** argv)
     lightingShader->SetUpShaders("./Assets/shaders/lightVertexSource.shader", "./Assets/shaders/lightFragmentSource.shader");
     lightCubeShader->SetUpShaders("./Assets/shaders/lightCubeVertexSource.shader", "./Assets/shaders/lightCubeFragmentSource.shader");
     
-    // -------------------------------- TEST -------------------------------------------
-
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- VERTEX
     float vertices[] = {
         // positions          // normals           // texture coords
         -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
@@ -244,7 +246,8 @@ int main(int argc, char** argv)
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
     };
     // positions all containers
-    Vector3 cubePositions[] = {
+ 
+    Vector3 cubePositions[] = { // --------------------------------------------------------------------------------------------------------------------------------------- CUBES POSITIONS
         Vector3(0.0f,  0.0f,  0.0f),
         Vector3(2.0f,  5.0f, -15.0f),
         Vector3(-1.5f, -2.2f, -2.5f),
@@ -257,14 +260,14 @@ int main(int argc, char** argv)
         Vector3(-1.3f,  1.0f, -1.5f)
     };
     // positions of the point lights
-    Vector3 pointLightPositions[] = {
+    Vector3 pointLightPositions[] = { // --------------------------------------------------------------------------------------------------------------------------------- LIGHTS POSITIONS
         Vector3(0.7f,  0.2f,  2.0f),
         Vector3(2.3f, -3.3f, -4.0f),
         Vector3(-4.0f,  2.0f, -12.0f),
         Vector3(0.0f,  0.0f, -3.0f)
     };
 
-    // first, configure the cube's VAO (and VBO)
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------- CUBE'S VAO & VBO
     unsigned int VBO, cubeVAO;
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &VBO); // GENERAL
@@ -282,12 +285,10 @@ int main(int argc, char** argv)
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
     
-    // second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
     unsigned int lightCubeVAO;
     glGenVertexArrays(1, &lightCubeVAO);
     glBindVertexArray(lightCubeVAO);
 
-    // we only need to bind to the VBO (to link it with glVertexAttribPointer), no need to fill it; the VBO's data already contains all we need (it's already bound, but we do it again for educational purposes)
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -297,9 +298,17 @@ int main(int argc, char** argv)
     Texture* texture1 = resourceManager.Create<Texture>("Container2", "./Assets/textures/container2.png");
     Texture* texture2 = resourceManager.Create<Texture>("Container2_Specular","./Assets/textures/container2_specular.png");
 
+
+
     lightingShader->use();
     lightingShader->setInt("material.diffuse", 0);
     lightingShader->setInt("material.specular", 1);
+
+    Light light;
+    light.Init(lightingShader, lightCubeShader);
+    light.CreateDirLight();
+    light.CreatePointLight();
+    unsigned int spotLight0 = light.CreateSpotLight(camera.position, camera.front, Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), TO_RAD(12.5f), TO_RAD(15.0f));
 
     // --------------------------- Main loop -------------------------
     while (!glfwWindowShouldClose(window))
@@ -323,11 +332,20 @@ int main(int argc, char** argv)
         lightingShader->setVec3("viewPos", camera.position);
         lightingShader->setFloat("material.shininess", 32.0f);
 
+        light.spotLights[spotLight0].position = camera.position;
+        light.spotLights[spotLight0].direction = camera.front;
+        light.Update();
+        // spotLight
+ 
+        /*
+        
+        
         // directional light
         lightingShader->setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
         lightingShader->setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
         lightingShader->setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
         lightingShader->setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+
         // point light 1
         lightingShader->setVec3("pointLights[0].position", pointLightPositions[0]);
         lightingShader->setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
@@ -336,6 +354,7 @@ int main(int argc, char** argv)
         lightingShader->setFloat("pointLights[0].constant", 1.0f);
         lightingShader->setFloat("pointLights[0].linear", 0.09f);
         lightingShader->setFloat("pointLights[0].quadratic", 0.032f);
+
         // point light 2
         lightingShader->setVec3("pointLights[1].position", pointLightPositions[1]);
         lightingShader->setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
@@ -344,6 +363,7 @@ int main(int argc, char** argv)
         lightingShader->setFloat("pointLights[1].constant", 1.0f);
         lightingShader->setFloat("pointLights[1].linear", 0.09f);
         lightingShader->setFloat("pointLights[1].quadratic", 0.032f);
+
         // point light 3
         lightingShader->setVec3("pointLights[2].position", pointLightPositions[2]);
         lightingShader->setVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
@@ -352,6 +372,7 @@ int main(int argc, char** argv)
         lightingShader->setFloat("pointLights[2].constant", 1.0f);
         lightingShader->setFloat("pointLights[2].linear", 0.09f);
         lightingShader->setFloat("pointLights[2].quadratic", 0.032f);
+
         // point light 4
         lightingShader->setVec3("pointLights[3].position", pointLightPositions[3]);
         lightingShader->setVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
@@ -359,32 +380,13 @@ int main(int argc, char** argv)
         lightingShader->setVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
         lightingShader->setFloat("pointLights[3].constant", 1.0f);
         lightingShader->setFloat("pointLights[3].linear", 0.09f);
-        lightingShader->setFloat("pointLights[3].quadratic", 0.032f);
-        // spotLight
-        lightingShader->setVec3("spotLight.position", camera.position);
-        lightingShader->setVec3("spotLight.direction", camera.front);
-        lightingShader->setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-        lightingShader->setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-        lightingShader->setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-        lightingShader->setFloat("spotLight.constant", 1.0f);
-        lightingShader->setFloat("spotLight.linear", 0.09f);
-        lightingShader->setFloat("spotLight.quadratic", 0.032f);
-        lightingShader->setFloat("spotLight.cutOff", cos(TO_RAD(12.5f)));
-        lightingShader->setFloat("spotLight.outerCutOff", cos(TO_RAD(15.0f)));
+        lightingShader->setFloat("pointLights[3].quadratic", 0.032f);*/
+
+        
 
 
         // ---------------------------  create transformations  -------------------------------------------------------------
         
-        /*
-        Vector3 diffuse(0.5f, 0.5f, 0.5f);
-        Vector3 ambient(0.2f, 0.2f, 0.2f);
-
-        Vector3 lightColor(1.0f,1.0f,1.0f);
-
-        Vector3 diffuseColor = lightColor * diffuse;
-        Vector3 ambientColor = diffuseColor * ambient;
-        */
-
         Vector3 rotation0(1.0f, 0.0f, 0.0f);
         Vector3 rotation1(0.0f, 1.0f, 0.0f);
         Vector3 rotation2(0.0f, 0.0f, 1.0f);
@@ -433,10 +435,10 @@ int main(int argc, char** argv)
         lightCubeShader->setMat4("view", view);
 
         glBindVertexArray(lightCubeVAO);
-        for (unsigned int i = 0; i < 4; i++)
+        for (unsigned int i = 0; i < light.pointLights.size(); i++)
         {
             model.IdentityMatrix();
-            model.translateMatrix(pointLightPositions[i]);
+            model.translateMatrix(light.pointLights[i].position);
             model.scale(scaling); // Make it a smaller cube
             lightCubeShader->setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);

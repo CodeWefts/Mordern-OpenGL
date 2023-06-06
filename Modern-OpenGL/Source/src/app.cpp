@@ -1,7 +1,5 @@
 #include <app.h>
 
-
-
 #include <log.h>
 #include <model.h>
 #include <resourcesManager.h>
@@ -24,11 +22,6 @@ Camera camera(Vector3(0.0f, 0.0f, 3.0f));
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
-
-// timing
-float lastFrame = 0.0f;
-
-
 
 
 Vector3 lightPos(1.2f, 1.0f, 2.0f);
@@ -251,39 +244,22 @@ int App::Init()
     Texture* texture2 = resourceManager.Create<Texture>("Container2_Specular", "./Assets/textures/container2_specular.png");
 
 
-
     lightingShader->use();
     lightingShader->setInt("material.diffuse", 0);
     lightingShader->setInt("material.specular", 1);
 
     light.Init(lightingShader, lightCubeShader);
-    light.CreateDirLight();
+
+    light.CreateSpotLight();
+
     light.CreatePointLight();
-    unsigned int spotLight0 = light.CreateSpotLight(camera.position, camera.front, Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), TO_RAD(12.5f), TO_RAD(15.0f));
-}
+    light.CreatePointLight();
+    light.CreatePointLight();
+    light.CreatePointLight();
 
-void App::Update()
-{
-    Shader* lightingShader = resourceManager.Get<Shader>("LightingShader");
-    Shader* lightCubeShader = resourceManager.Get<Shader>("LightCubeShader");
+    light.CreateDirLight();
 
-    Texture* texture1 = resourceManager.Get<Texture>("Container2");
-    Texture* texture2 = resourceManager.Get<Texture>("Container2_Specular");
-
-
-    // positions all containers
-    Vector3 cubePositions[] = { // --------------------------------------------------------------------------------------------------------------------------------------- CUBES POSITIONS
-        Vector3(0.0f,  0.0f,  0.0f),
-        Vector3(2.0f,  5.0f, -15.0f),
-        Vector3(-1.5f, -2.2f, -2.5f),
-        Vector3(-3.8f, -2.0f, -12.3f),
-        Vector3(2.4f, -0.4f, -3.5f),
-        Vector3(-1.7f,  3.0f, -7.5f),
-        Vector3(1.3f, -2.0f, -2.5f),
-        Vector3(1.5f,  2.0f, -2.5f),
-        Vector3(1.5f,  0.2f, -1.5f),
-        Vector3(-1.3f,  1.0f, -1.5f)
-    };
+    
     // positions of the point lights
     Vector3 pointLightPositions[] = { // --------------------------------------------------------------------------------------------------------------------------------- LIGHTS POSITIONS
         Vector3(0.7f,  0.2f,  2.0f),
@@ -292,24 +268,20 @@ void App::Update()
         Vector3(0.0f,  0.0f, -3.0f)
     };
 
-    // render
-        // ------
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    lightingShader->use();
-    lightingShader->setVec3("viewPos", camera.position);
-    lightingShader->setFloat("material.shininess", 32.0f);
+    light.spotLights[0].diffuse = Vector3(1.0f, 1.0f, 1.0f);
+    light.spotLights[0].ambient = Vector3(0.0f, 0.0f, 0.0f);
+    light.spotLights[0].specular = Vector3(1.0f, 1.0f, 1.0f);
+    light.spotLights[0].cutOff = cos(TO_RAD(5.0f));
+    light.spotLights[0].outerCutOff = cos(TO_RAD(10.0f));
 
-    // spotLight
-    light.spotLights[0].position = camera.position;
-    light.spotLights[0].direction = camera.front;
-    /*
+
     // directional light
     light.dirLights[0].direction = Vector3(-0.2f, -1.0f, -0.3f);
     light.dirLights[0].ambient = Vector3(0.05f, 0.05f, 0.05f);
     light.dirLights[0].diffuse = Vector3(0.4f, 0.4f, 0.4f);
     light.dirLights[0].specular = Vector3(0.5f, 0.5f, 0.5f);
+
 
     // point light 1
     light.pointLights[0].position = pointLightPositions[0];
@@ -319,6 +291,7 @@ void App::Update()
     light.pointLights[0].constant = 1.0f;
     light.pointLights[0].linear = 0.09f;
     light.pointLights[0].quadratic = 0.032f;
+
 
     // point light 2
     light.pointLights[1].position = pointLightPositions[1];
@@ -346,7 +319,45 @@ void App::Update()
     light.pointLights[3].constant = 1.0f;
     light.pointLights[3].linear = 0.09f;
     light.pointLights[3].quadratic = 0.032f;
-    */
+}
+
+void App::Update()
+{
+    Shader* lightingShader = resourceManager.Get<Shader>("LightingShader");
+    Shader* lightCubeShader = resourceManager.Get<Shader>("LightCubeShader");
+
+    Texture* texture1 = resourceManager.Get<Texture>("Container2");
+    Texture* texture2 = resourceManager.Get<Texture>("Container2_Specular");
+
+
+    // positions all containers
+    Vector3 cubePositions[] = { // --------------------------------------------------------------------------------------------------------------------------------------- CUBES POSITIONS
+        Vector3(0.0f,  0.0f,  0.0f),
+        Vector3(2.0f,  5.0f, -15.0f),
+        Vector3(-1.5f, -2.2f, -2.5f),
+        Vector3(-3.8f, -2.0f, -12.3f),
+        Vector3(2.4f, -0.4f, -3.5f),
+        Vector3(-1.7f,  3.0f, -7.5f),
+        Vector3(1.3f, -2.0f, -2.5f),
+        Vector3(1.5f,  2.0f, -2.5f),
+        Vector3(1.5f,  0.2f, -1.5f),
+        Vector3(-1.3f,  1.0f, -1.5f)
+    };
+    
+    // render
+        // ------
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    lightingShader->use();
+    lightingShader->setVec3("viewPos", camera.position);
+    lightingShader->setFloat("material.shininess", 32.0f);
+
+    // spotLight
+    light.spotLights[0].position = camera.position;
+    light.spotLights[0].direction = camera.front;
+
+    
     light.Update();
     // ---------------------------  create transformations  -------------------------------------------------------------
 

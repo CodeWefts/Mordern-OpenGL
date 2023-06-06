@@ -27,32 +27,26 @@ public:
 	template <class T>
 	T* Create(const string& name, const string& path)
 	{
-		
 		T* resource = new T;
 		resource->LoadResource(path);
-		
 
 		Delete(name);
-
 		resources.emplace(name, resource);
 		
 		return resource;
 	}
 
 	template <class T>
-	T* Get(string const& filename)
+	T* Get(const string& filename)
 	{
+		auto it = resources.find(filename);
 
-		// Range of "dictionary"
-		for (auto it = resources.begin(); it != resources.end(); ++it)
+		if (it == resources.end())
 		{
-			if (it->first == filename)
-			{
-				return it->second;
-			}
+			DEBUG_LOG("ERROR::GET_RESOURCE_FAIL\n");
+			return nullptr;
 		}
-
-		return nullptr;
+		return dynamic_cast<T*>(it->second);
 	}
 
 	void Delete(string const& filename);

@@ -12,13 +12,12 @@ void Log::OpenFile(filesystem::path const& filename)
 
     if (log.file)
     {
-        cout << "file" << filename << "IS open.";
-        printf("file '%c' IS open. \n", filename);
+        cout << "file is open." << endl;
     }
 
 	if (!log.file)
 	{
-		printf("file '%s' NOT open, \n path name must start by './Assets/log/(name)' \n");
+		cout << "file '%s' NOT open, \n path name must start by './Assets/log/(name)'" << endl;
 	}
 
 

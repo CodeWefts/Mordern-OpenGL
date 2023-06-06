@@ -77,7 +77,6 @@ void Model::LoadResource(string const& filename)
 
         while (file >> c)
         {
-            cout << c << endl;
             if (c == "v")//positions vertex
             {
                 Vector3 pos;

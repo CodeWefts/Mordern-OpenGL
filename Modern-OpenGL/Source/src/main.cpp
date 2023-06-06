@@ -1,11 +1,13 @@
 #include <app.h>
-
+#include <log.h>
 
 int main(int argc, char** argv)
 {
     App* app = new App();
 
 
+    Log file;
+    file.OpenFile("./Assets/log/log.txt");
 
     // ----------------------- Setup Glfw window ---------------------
 

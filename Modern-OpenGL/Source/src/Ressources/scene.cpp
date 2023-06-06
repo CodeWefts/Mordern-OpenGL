@@ -15,7 +15,7 @@ Scene::~Scene()
 
 void Scene::CreateMesh(Model* model, Shader* lightingShader, Texture* textureDiffuse, Texture* texureSpecular, Vector3 position, Vector3 rotation, Vector3 scale)
 {
-    //DEBUG_LOG("Create Mesh");
+    DEBUG_LOG("Create Mesh \n");
 
     Mesh newMesh(model, lightingShader, textureDiffuse, texureSpecular, position, rotation, scale);
 

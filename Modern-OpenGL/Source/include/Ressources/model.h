@@ -34,11 +34,9 @@ public:
 	vector<uint32_t>   indexBuffer;
 	vector<Texture>    textures;
 
+	int verticesSize, indexSize;
 
-	void BufferGL(vector<Vertex> vertices, vector<uint32_t> indices);
 
-
-	void Draw(Shader& shader);
-
+	void BufferGL();
 
 };

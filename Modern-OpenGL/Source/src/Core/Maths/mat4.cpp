@@ -140,7 +140,7 @@ Matrix4x4 Matrix4x4::rotate(float angle, Vector3& vec)
     return *this;
 }
 
-Matrix4x4 Matrix4x4::TRS(Vector4& angle, Vector4& vectorTrans, Vector4& vectorScaling, Vector4& axes)
+Matrix4x4 Matrix4x4::TRS(Vector3& angle, Vector3& vectorTrans, Vector3& vectorScaling, Vector3& axes)
 {
     Matrix4x4 rotation;
     Matrix4x4 R;

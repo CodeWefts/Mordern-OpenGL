@@ -12,8 +12,7 @@ bool operator==(const Vertex& vx1, const Vertex& vx2)
 {
     return vx1.position == vx2.position &&
         vx1.normal == vx2.normal &&
-        vx1.textureUV.value == vx2.textureUV.value;
-
+        vx1.textureUV == vx2.textureUV;
 }
 
 // ------------------ Function -----------------------------
@@ -58,6 +57,7 @@ void Model::BufferGL()
 
 void Model::LoadResource(string const& filename)
 {
+    
 	ifstream file;
 
     //ephemeral vectors
@@ -68,12 +68,16 @@ void Model::LoadResource(string const& filename)
     //open ModelFile
 	file.open(filename);
 
+    
     if (file)
     {
+        DEBUG_LOG("FILE_OPEN\n");
+
         string c;
 
         while (file >> c)
         {
+            cout << c << endl;
             if (c == "v")//positions vertex
             {
                 Vector3 pos;
@@ -91,7 +95,7 @@ void Model::LoadResource(string const& filename)
             else if (c == "vt")//textures coords vertex
             {
                 Vector2 pos;
-                file >> pos.value[0] >> pos.value[1];
+                file >> pos[0] >> pos[1];
 
                 textureUVs.push_back(pos);
 
@@ -113,21 +117,23 @@ void Model::LoadResource(string const& filename)
 
                     //duplicate informations doesn't matter
                     bool isNotRepete = true;
+                    
+                    
                     for (int i = 0; i < vertexBufferObj.size(); i++)
                     {
-                        if (vrtx == vertexBufferObj[i])
+                        if ( vertexBufferObj[i] ==  vrtx)
                         {
                             indexBuffer.push_back(i);
                             isNotRepete = false;
                             break;
                         }
-                    }
 
-                    //new informations are push back in vertexBufferObj
-                    if (isNotRepete)
-                    {
-                        vertexBufferObj.push_back(vrtx);
-                        indexBuffer.push_back(vertexBufferObj.size() - 1);
+                        //new informations are push back in vertexBufferObj
+                        if (isNotRepete)
+                        {
+                            vertexBufferObj.push_back(vrtx);
+                            indexBuffer.push_back(vertexBufferObj.size() - 1);
+                        }
                     }
                 }
             }
@@ -135,7 +141,8 @@ void Model::LoadResource(string const& filename)
     }
     else
     {
-        DEBUG_LOG("RROR::FILE_MODEL_LOAD_FAIL");
+        DEBUG_LOG("ERROR::FILE_MODEL_LOAD_FAIL\n");
+        return;
     }
     DEBUG_LOG("FILE_MODEL_LOAD_SUCCED");
     file.close();

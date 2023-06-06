@@ -147,8 +147,6 @@ Texture : inherits from IResource
 
 
 
-
-
 Library used 
 -------------
 

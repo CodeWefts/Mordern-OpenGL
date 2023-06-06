@@ -169,5 +169,8 @@
     <Image Include="Assets\textures\container2_specular.png">
       <Filter>Fichiers de ressources</Filter>
     </Image>
+    <Image Include="Assets\textures\viking.jpeg">
+      <Filter>Fichiers de ressources</Filter>
+    </Image>
   </ItemGroup>
 </Project>

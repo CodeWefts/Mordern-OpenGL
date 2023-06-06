@@ -5,6 +5,7 @@
 #include <resourcesManager.h>
 #include <camera.h>
 #include <light.h>
+#include <mesh.h>
 
 #include <mat4.h>
 
@@ -168,6 +169,8 @@ int App::Init()
     lightingShader->SetUpShaders("./Assets/shaders/lightVertexSource.shader", "./Assets/shaders/lightFragmentSource.shader");
     lightCubeShader->SetUpShaders("./Assets/shaders/lightCubeVertexSource.shader", "./Assets/shaders/lightCubeFragmentSource.shader");
 
+
+
     // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- VERTEX
     float vertices[] = {
         // positions          // normals           // texture coords
@@ -242,7 +245,11 @@ int App::Init()
     // ---------- TEXTURE ----------------
     Texture* texture1 = resourceManager.Create<Texture>("Container2", "./Assets/textures/container2.png");
     Texture* texture2 = resourceManager.Create<Texture>("Container2_Specular", "./Assets/textures/container2_specular.png");
+    
+    Texture* texture3 = resourceManager.Create<Texture>("VikingTexture", "./Assets/textures/viking.jpeg");
 
+    Model* model = resourceManager.Create<Model>("VikingModel", "./Assets/meshes/viking_room.obj");
+    scene.CreateMesh(model, lightingShader, texture3);
 
     lightingShader->use();
     lightingShader->setInt("material.diffuse", 0);
@@ -357,7 +364,7 @@ void App::Update()
     light.spotLights[0].position = camera.position;
     light.spotLights[0].direction = camera.front;
 
-    
+    scene.Update();
     light.Update();
     // ---------------------------  create transformations  -------------------------------------------------------------
 
@@ -421,7 +428,6 @@ void App::Update()
 
 void App::Delete()
 {
-
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteBuffers(1, &lightCubeVAO);
     glDeleteBuffers(1, &VBO);

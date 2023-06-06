@@ -2,7 +2,6 @@
 #include <shader.h>
 #include <texture.h>
 
-
 #include <vector>
 #include <vec3.h>
 #include <vec2.h>

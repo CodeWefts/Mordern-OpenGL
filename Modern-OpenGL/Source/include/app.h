@@ -13,6 +13,7 @@
 #include <shader.h>
 #include <texture.h>
 #include <light.h>
+#include <scene.h>
 #include <resourcesManager.h>
 
 class App
@@ -20,7 +21,9 @@ class App
 
 	ResourcesManager resourceManager;
 	Light light;
+	Scene scene;
 	Texture texture;
+
 
 	unsigned int VBO,lightCubeVAO, cubeVAO;
 
